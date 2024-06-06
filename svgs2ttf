@@ -3,6 +3,7 @@
 import sys
 import os.path
 import json
+import fontforge
 
 IMPORT_OPTIONS = ('removeoverlap', 'correctdir')
 
@@ -14,6 +15,7 @@ except NameError:
 def loadConfig(filename='font.json'):
     with open(filename) as f:
         return json.load(f)
+        
 
 def setProperties(font, config):
     props = config['props']
@@ -40,11 +42,19 @@ def addGlyphs(font, config):
         g = font.createMappedChar(int(k, 0))
         # Get outlines
         src = '%s.svg' % k
+        
+
         if not isinstance(v, dict):
             v = {'src': v or src}
+        print(config.get('input', '.'),os.path.sep,v.pop('src', src),"******")
         src = '%s%s%s' % (config.get('input', '.'), os.path.sep, v.pop('src', src))
-        g.importOutlines(src, IMPORT_OPTIONS)
-        g.removeOverlap()
+        try:
+            g.importOutlines(src, IMPORT_OPTIONS)
+            g.removeOverlap()
+        except Exception as e:
+            sys.stderr.write(f"Error importing glyph from {src}: {e}\n")
+            continue
+    
         # Copy attributes
         for k2, v2 in v.items():
             if hasattr(g, k2):
