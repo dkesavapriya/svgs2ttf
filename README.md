@@ -93,3 +93,4 @@ Some customizations might be best done by editing the script. (See the
   [fontforge#1374](https://github.com/fontforge/fontforge/issues/1374))
   were only recently corrected.
 
+# svg2tff
